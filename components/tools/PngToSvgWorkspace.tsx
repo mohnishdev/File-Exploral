@@ -43,7 +43,7 @@ export function PngToSvgWorkspace() {
   const objectUrls = useRef(new Set<string>());
   const operationId = useRef(0);
   const workerController = useRef<AbortController | undefined>(undefined);
-  const resetTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const resetTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => () => {
     operationId.current += 1;
