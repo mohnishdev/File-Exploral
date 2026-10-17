@@ -116,7 +116,7 @@ export function createTraceOptions(options: {
   const detailSettings = {
     low: { pathomit: 12, ltres: 2, qtres: 2 },
     medium: { pathomit: 4, ltres: 1, qtres: 1 },
-    high: { pathomit: 1, ltres: 0.5, qtres: 0.5 },
+    high: { pathomit: 0, ltres: 0.25, qtres: 0.25 },
   }[options.detail];
 
   const smoothing = Math.max(0, Math.min(100, options.smoothing));
@@ -131,9 +131,9 @@ export function createTraceOptions(options: {
       : options.colors === "auto" ? 16 : options.colors,
     blurradius: blurRadius,
     blurdelta: 16 + Math.round((100 - smoothing) * 1.2),
-    linefilter: options.mode === "monochrome" || smoothing > 0,
+    linefilter: options.mode === "monochrome" || smoothing >= 67,
     rightangleenhance: options.mode === "monochrome",
-    roundcoords: 1,
+    roundcoords: options.detail === "high" ? 2 : 1,
     scale: 1,
     viewbox: true,
     strokewidth: 0,

@@ -37,10 +37,10 @@ export const MAX_SVG_BYTES = 8 * 1024 * 1024;
 export const MAX_SVG_PATHS = 30_000;
 
 export const defaultVectorizationOptions: VectorizationOptions = {
-  mode: "monochrome",
-  colors: 8,
-  detail: "medium",
-  smoothing: 30,
+  mode: "color",
+  colors: 16,
+  detail: "high",
+  smoothing: 0,
   removeBackground: false,
   threshold: 160,
   thresholdMode: "fixed",

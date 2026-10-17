@@ -82,10 +82,10 @@ export function PngToSvgWorkspace() {
   function selectPreset(nextPreset: Exclude<VectorPreset, "custom">) {
     const presetOptions: Record<Exclude<VectorPreset, "custom">, VectorizationOptions> = {
       logo: {
-        mode: "monochrome",
-        colors: 8,
+        mode: "color",
+        colors: 16,
         detail: "high",
-        smoothing: 20,
+        smoothing: 0,
         removeBackground: false,
         threshold: 160,
         thresholdMode: "fixed",
@@ -101,9 +101,9 @@ export function PngToSvgWorkspace() {
       },
       illustration: {
         mode: "color",
-        colors: 16,
-        detail: "medium",
-        smoothing: 20,
+        colors: 32,
+        detail: "high",
+        smoothing: 0,
         removeBackground: false,
         threshold: 160,
         thresholdMode: "fixed",

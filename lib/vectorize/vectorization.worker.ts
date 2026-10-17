@@ -18,47 +18,86 @@ function postStage(stage: string) {
 function removeFlatBackground(imageData: ImageData) {
   const { data, width, height } = imageData;
   const total = width * height;
-  const visited = new Uint8Array(total);
   const queue = new Int32Array(total);
-  const corners = [
-    0,
-    width - 1,
-    (height - 1) * width,
-    height * width - 1,
-  ];
-  const background = [0, 0, 0];
-  for (const pixel of corners) {
-    const offset = pixel * 4;
-    for (let channel = 0; channel < 3; channel++) background[channel] += data[offset + channel] / corners.length;
+  const colorBins = new Map<number, { count: number; r: number; g: number; b: number }>();
+
+  function touchesTransparentEdge(pixel: number, x: number, y: number): boolean {
+    if (x === 0 || y === 0 || x === width - 1 || y === height - 1) return true;
+    return data[(pixel - 1) * 4 + 3] === 0 ||
+      data[(pixel + 1) * 4 + 3] === 0 ||
+      data[(pixel - width) * 4 + 3] === 0 ||
+      data[(pixel + width) * 4 + 3] === 0;
   }
+
+  let candidateCount = 0;
+  for (let pixel = 0; pixel < total; pixel++) {
+    const offset = pixel * 4;
+    if (data[offset + 3] === 0) continue;
+    const x = pixel % width;
+    const y = Math.floor(pixel / width);
+    if (!touchesTransparentEdge(pixel, x, y)) continue;
+    candidateCount++;
+    const key = (data[offset] >> 3) << 10 | (data[offset + 1] >> 3) << 5 | data[offset + 2] >> 3;
+    const bin = colorBins.get(key) ?? { count: 0, r: 0, g: 0, b: 0 };
+    bin.count++;
+    bin.r += data[offset];
+    bin.g += data[offset + 1];
+    bin.b += data[offset + 2];
+    colorBins.set(key, bin);
+  }
+
+  let dominantBin: { count: number; r: number; g: number; b: number } | undefined;
+  for (const bin of colorBins.values()) {
+    if (!dominantBin || bin.count > dominantBin.count) dominantBin = bin;
+  }
+  if (!dominantBin || dominantBin.count / candidateCount < 0.2) return;
+  const background = [
+    dominantBin.r / dominantBin.count,
+    dominantBin.g / dominantBin.count,
+    dominantBin.b / dominantBin.count,
+  ];
 
   let head = 0;
   let tail = 0;
-  for (const pixel of corners) {
-    if (!visited[pixel] && data[pixel * 4 + 3] > 0) {
-      visited[pixel] = 1;
+  for (let pixel = 0; pixel < total; pixel++) {
+    const offset = pixel * 4;
+    if (data[offset + 3] === 0) continue;
+    const x = pixel % width;
+    const y = Math.floor(pixel / width);
+    if (!touchesTransparentEdge(pixel, x, y)) continue;
+    const distance = Math.hypot(
+      data[offset] - background[0],
+      data[offset + 1] - background[1],
+      data[offset + 2] - background[2],
+    );
+    if (distance <= 52) {
+      data[offset + 3] = 0;
       queue[tail++] = pixel;
     }
   }
 
   while (head < tail) {
     const pixel = queue[head++];
-    const offset = pixel * 4;
-    const distance = Math.hypot(
-      data[offset] - background[0],
-      data[offset + 1] - background[1],
-      data[offset + 2] - background[2],
-    );
-    if (distance > 52) continue;
-    data[offset + 3] = 0;
     const x = pixel % width;
     const y = Math.floor(pixel / width);
-    const neighbors = [x > 0 ? pixel - 1 : -1, x + 1 < width ? pixel + 1 : -1, y > 0 ? pixel - width : -1, y + 1 < height ? pixel + width : -1];
+    const neighbors = [
+      x > 0 ? pixel - 1 : -1,
+      x + 1 < width ? pixel + 1 : -1,
+      y > 0 ? pixel - width : -1,
+      y + 1 < height ? pixel + width : -1,
+    ];
     for (const next of neighbors) {
-      if (next >= 0 && !visited[next]) {
-        visited[next] = 1;
-        queue[tail++] = next;
-      }
+      if (next < 0) continue;
+      const nextOffset = next * 4;
+      if (data[nextOffset + 3] === 0) continue;
+      const distance = Math.hypot(
+        data[nextOffset] - background[0],
+        data[nextOffset + 1] - background[1],
+        data[nextOffset + 2] - background[2],
+      );
+      if (distance > 52) continue;
+      data[nextOffset + 3] = 0;
+      queue[tail++] = next;
     }
   }
 }
