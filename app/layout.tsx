@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { AdSenseLoader } from "@/components/ads/AdSenseLoader";
 import { createPageMetadata, siteDescription, siteUrl } from "@/lib/seo/metadata";
 import "./globals.css";
 
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={geist.variable}>
-      <body><Header />{children}<Footer /></body>
+      <body><AdSenseLoader /><Header />{children}<Footer /></body>
     </html>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Brand } from "./Brand";
 import { getCategoryPath } from "@/lib/seo/tool-routes";
+import { PrivacyChoicesLink } from "@/components/ads/PrivacyChoicesLink";
 
 export function Footer() {
   return (
@@ -21,6 +22,13 @@ export function Footer() {
           <Link href="/image-tools/png-to-jpg">PNG to JPG</Link>
           <Link href="/image-tools/image-resizer">Image resizer</Link>
           <Link href="/pdf-tools/merge-pdf">Merge PDF</Link>
+        </div>
+        <div className="footer-column">
+          <h2>About</h2>
+          <Link href="/about">About Image Converter</Link>
+          <Link href="/contact">Contact</Link>
+          <Link href="/privacy-policy">Privacy policy</Link>
+          <PrivacyChoicesLink />
         </div>
         <div className="footer-note">
           <span className="privacy-dot" />

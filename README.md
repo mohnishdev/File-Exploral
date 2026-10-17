@@ -27,12 +27,16 @@ npm run build
 
 Set `NEXT_PUBLIC_SITE_URL` to the canonical origin before deploying so metadata, robots.txt, and sitemap.xml point to the production domain. The fallback domain is a reserved `.example` placeholder.
 
+Set `CONTACT_EMAIL` to the support address before launch. AdSense is disabled by default: reserved placements remain visible until `NEXT_PUBLIC_ADSENSE_ENABLED=true`, a valid `NEXT_PUBLIC_ADSENSE_CLIENT_ID` (`ca-pub-...`), and numeric slot IDs are configured. Set slot IDs with `NEXT_PUBLIC_ADSENSE_SLOT_TOP`, `NEXT_PUBLIC_ADSENSE_SLOT_MIDDLE`, `NEXT_PUBLIC_ADSENSE_SLOT_BOTTOM`, and `NEXT_PUBLIC_ADSENSE_SLOT_SIDEBAR`.
+
+Before enabling ads, the site must be approved in AdSense, the appropriate Google Privacy & Messaging consent message must be configured and published for applicable regions, and the deployed consent and withdrawal experience must be verified. The `/ads.txt` route emits Google's seller record only when a valid publisher ID is configured; it returns 404 otherwise. Do not use a sample publisher ID or enable ads before consent setup is ready. The production domain remains a manual launch configuration.
+
 ## Project structure
 
 - `app/` contains the homepage, `/image-tools` and `/pdf-tools` category hubs, canonical tool routes, guides, 404, robots, and sitemap. Previous `/tools/<slug>` URLs permanently redirect to the canonical category route.
 - `components/layout/` contains the shared brand, responsive header, navigation, and footer.
 - `components/tools/` contains reusable tool UI and isolated browser image/PDF workspaces.
-- `components/ads/` contains reserved, labeled ad placements. No ad network is currently integrated.
+- `components/ads/` contains reserved ad placements and opt-in AdSense integration; ads and the network script remain disabled until valid deployment configuration is supplied.
 - `lib/tools.ts` is the shared source of tool descriptions, formats, FAQs, and related links.
 - `lib/seo/` centralizes canonical routes, tool-specific metadata/content, social metadata, and structured data. Set `NEXT_PUBLIC_SITE_URL` to the production origin before deployment; Vercel's production URL is used when available, otherwise canonical tags use the reserved `.example` fallback.
 - `lib/seo/tool-pages.ts` holds tool-specific search snippets, usage guidance, limitations, and FAQs; canonical tool routes are generated from the shared catalog and included in `app/sitemap.ts`.

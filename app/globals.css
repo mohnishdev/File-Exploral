@@ -202,19 +202,24 @@ button { color: inherit; }
 
 .ad-slot { min-height: 105px; display: flex; align-items: center; justify-content: center; border: 1px solid #e8ebe7; border-radius: 9px; background: #f8f9f6; color: #929a93; }
 .ad-slot > span { font-size: 9px; letter-spacing: 1.2px; font-weight: 650; }
+.ad-slot--active { position: relative; display: block; padding: 26px 12px 10px; }
+.ad-slot--active .ad-slot-label { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); }
+.adsbygoogle { min-height: 50px; }
 .ad-slot--top { margin-block: 34px 4px; }
 .ad-slot--middle { min-height: 100px; margin-block: 40px 15px; }
 .ad-slot--bottom { min-height: 90px; margin-block: 45px 0; }
 .ad-slot--sidebar { min-height: 280px; }
 
 .site-footer { background: #f7f9f7; border-top: 1px solid #e9eeea; }
-.footer-main { display: grid; grid-template-columns: 1.5fr .7fr .8fr 1.2fr; gap: 40px; padding-top: 51px; padding-bottom: 43px; }
+.footer-main { display: grid; grid-template-columns: 1.5fr .7fr .8fr .9fr 1.2fr; gap: 32px; padding-top: 51px; padding-bottom: 43px; }
 .footer-about .brand { font-size: 15px; }
 .footer-about p { margin: 14px 0 0; color: #818c85; font-size: 11px; line-height: 1.7; }
 .footer-column { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; }
 .footer-column h2 { margin: 0 0 3px; color: #89938d; font-size: 9px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; }
 .footer-column a { color: #59665f; font-size: 11px; }
 .footer-column a:hover { color: var(--green); }
+.footer-column .privacy-choices-control button { color: #59665f; font-size: 11px; }
+.footer-column .privacy-choices-control button:hover { color: var(--green); }
 .footer-note { display: flex; align-items: flex-start; gap: 9px; }
 .footer-note p { margin: 0; color: #7e8982; font-size: 11px; line-height: 1.65; }
 .privacy-dot { width: 7px; height: 7px; margin-top: 7px; flex: 0 0 auto; border-radius: 50%; background: #52a673; }
@@ -579,6 +584,24 @@ button { color: inherit; }
 .article-body p { margin: 0 0 17px; }
 .article-body h2 { margin: 34px 0 10px; color: #27342e; font-size: 22px; line-height: 1.3; font-weight: 620; letter-spacing: -.7px; }
 .article-body a { color: #28784c; text-decoration: underline; text-decoration-color: #c5dec9; text-underline-offset: 3px; }
+.article-back { margin-top: 28px; }
+.about-values { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 27px 0; }
+.about-values .card { padding: 21px; }
+.about-values h2 { margin: 13px 0 5px; font-size: 15px; }
+.about-values p { margin: 0; font-size: 12px; line-height: 1.7; }
+.contact-page { max-width: 810px; }
+.contact-card { display: grid; grid-template-columns: 44px 1fr 34px; align-items: start; gap: 15px; max-width: 670px; margin: 27px auto 0; padding: 24px; border: 1px solid var(--line); border-radius: 13px; background: white; box-shadow: 0 8px 25px #14251f08; }
+.contact-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 11px; color: var(--green); background: #edf6ef; }
+.contact-card h2 { margin: 0 0 6px; color: var(--ink); font-size: 17px; }
+.contact-card p { margin: 0 0 11px; color: #68766e; font-size: 13px; line-height: 1.75; }
+.contact-card p:last-child { margin-bottom: 0; }
+.contact-mail-link { color: #617168; }
+.contact-policy-link { max-width: 670px; margin: 21px auto 0; color: #69766e; font-size: 13px; }
+.contact-card a, .contact-policy-link a { color: #28784c; text-decoration: underline; text-underline-offset: 3px; }
+.privacy-choices-control { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+.privacy-choices-control button { padding: 0; border: 0; background: transparent; color: #59665f; font-size: inherit; text-align: left; cursor: pointer; }
+.privacy-choices-control button:hover { color: var(--green); text-decoration: underline; text-underline-offset: 3px; }
+.privacy-choices-control [role="status"] { max-width: 270px; color: #8b5a27; font-size: 11px; line-height: 1.5; }
 .article-callout { display: flex; gap: 13px; margin: 24px 0; padding: 17px; border: 1px solid #e4eee5; border-radius: 9px; background: #f5f9f5; color: #34774f; }
 .article-callout svg { flex: 0 0 auto; margin-top: 3px; }
 .article-callout p { margin: 0; color: #617067; }
@@ -698,6 +721,10 @@ button { color: inherit; }
   .guides-grid { grid-template-columns: 1fr; gap: 10px; padding-top: 29px; }
   .guide-tile .card, .guide-coming { min-height: 220px; padding: 18px; }
   .article-page { padding-top: 17px; }
+  .about-values { grid-template-columns: 1fr; }
+  .contact-card { grid-template-columns: 38px 1fr; gap: 12px; padding: 18px; }
+  .contact-icon { width: 38px; height: 38px; }
+  .contact-mail-link { grid-column: 2; }
   .article-header { padding-top: 10px; }
   .article-header h1 { font-size: 37px; letter-spacing: -1.7px; }
   .article-header p { font-size: 13px; }
