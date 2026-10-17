@@ -316,6 +316,12 @@ button { color: inherit; }
 .vector-source-meta strong { overflow: hidden; color: #3f4c43; font-size: 11px; font-weight: 620; text-overflow: ellipsis; white-space: nowrap; }
 .workspace-reset { display: inline-flex; align-items: center; gap: 5px; padding: 5px 7px; border: 0; background: transparent; color: #78847b; font-size: 10px; cursor: pointer; }
 .workspace-reset:hover { color: #28744b; }
+.vector-presets { display: grid; gap: 6px; color: #66736a; font-size: 10px; font-weight: 620; }
+.vector-presets > div { display: flex; flex-wrap: wrap; gap: 6px; }
+.vector-presets button { min-height: 30px; padding: 0 11px; border: 1px solid #e5eae5; border-radius: 6px; background: #fff; color: #657168; font-size: 10px; cursor: pointer; }
+.vector-presets button:hover:not(:disabled), .vector-presets button.is-selected { border-color: #b9d8c2; background: #f5faf6; color: #28744b; }
+.vector-presets button:disabled { opacity: .55; cursor: not-allowed; }
+.vector-custom-label { align-self: center; color: #869189; font-size: 9px; font-weight: 500; }
 .vector-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 0; border: 0; }
 .vector-mode legend { margin-bottom: 7px; color: #66736a; font-size: 10px; font-weight: 620; }
 .vector-mode label { display: flex; align-items: flex-start; gap: 8px; min-height: 55px; padding: 10px; border: 1px solid #e8ede8; border-radius: 8px; background: white; cursor: pointer; }
@@ -325,6 +331,7 @@ button { color: inherit; }
 .vector-mode label strong { color: #445148; font-size: 10px; font-weight: 630; }
 .vector-mode label small { color: #879189; font-size: 8px; line-height: 1.45; }
 .vector-settings { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.vector-threshold-settings { grid-template-columns: 1fr; }
 .vector-settings > label, .vector-range-label { display: grid; align-content: start; gap: 5px; color: #647168; font-size: 10px; }
 .vector-settings select { width: 100%; min-height: 36px; padding: 0 9px; border: 1px solid #e2e8e2; border-radius: 6px; background: white; color: #47554a; font-size: 10px; }
 .vector-range-label strong { justify-self: end; color: #31764c; }

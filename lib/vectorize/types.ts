@@ -1,6 +1,7 @@
 export type VectorizationMode = "monochrome" | "color";
 export type VectorizationDetail = "low" | "medium" | "high";
 export type VectorColorCount = "auto" | 2 | 4 | 8 | 16 | 32;
+export type ThresholdMode = "fixed" | "otsu" | "adaptive";
 
 export type VectorizationOptions = {
   mode: VectorizationMode;
@@ -9,6 +10,7 @@ export type VectorizationOptions = {
   smoothing: number;
   removeBackground: boolean;
   threshold: number;
+  thresholdMode: ThresholdMode;
 };
 
 export type VectorizationResult = {
@@ -41,4 +43,5 @@ export const defaultVectorizationOptions: VectorizationOptions = {
   smoothing: 30,
   removeBackground: false,
   threshold: 160,
+  thresholdMode: "fixed",
 };

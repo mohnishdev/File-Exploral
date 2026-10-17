@@ -20,6 +20,7 @@ import {
 import { imageTracerEngine } from "@/lib/vectorize/workerClient";
 
 type PreviewTab = "original" | "vector";
+type VectorPreset = "logo" | "signature" | "illustration" | "custom";
 
 const progressStages = [
   "Preparing image…",
@@ -34,6 +35,7 @@ export function PngToSvgWorkspace() {
   const [resultUrl, setResultUrl] = useState("");
   const [result, setResult] = useState<VectorizationResult>();
   const [options, setOptions] = useState<VectorizationOptions>(defaultVectorizationOptions);
+  const [preset, setPreset] = useState<VectorPreset>("logo");
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
@@ -66,6 +68,49 @@ export function PngToSvgWorkspace() {
 
   function updateOptions(patch: Partial<VectorizationOptions>) {
     setOptions((current) => ({ ...current, ...patch }));
+    setPreset("custom");
+    setStatus("");
+    setError("");
+    if (resultUrl) {
+      URL.revokeObjectURL(resultUrl);
+      objectUrls.current.delete(resultUrl);
+      setResultUrl("");
+      setResult(undefined);
+    }
+  }
+
+  function selectPreset(nextPreset: Exclude<VectorPreset, "custom">) {
+    const presetOptions: Record<Exclude<VectorPreset, "custom">, VectorizationOptions> = {
+      logo: {
+        mode: "monochrome",
+        colors: 8,
+        detail: "high",
+        smoothing: 20,
+        removeBackground: false,
+        threshold: 160,
+        thresholdMode: "fixed",
+      },
+      signature: {
+        mode: "monochrome",
+        colors: 8,
+        detail: "high",
+        smoothing: 10,
+        removeBackground: false,
+        threshold: 18,
+        thresholdMode: "adaptive",
+      },
+      illustration: {
+        mode: "color",
+        colors: 16,
+        detail: "medium",
+        smoothing: 20,
+        removeBackground: false,
+        threshold: 160,
+        thresholdMode: "fixed",
+      },
+    };
+    setOptions(presetOptions[nextPreset]);
+    setPreset(nextPreset);
     setStatus("");
     setError("");
     if (resultUrl) {
@@ -233,6 +278,16 @@ export function PngToSvgWorkspace() {
             <button type="button" className="workspace-reset vector-change-file" onClick={reset}>Change file</button>
           </div>
 
+          <div className="vector-presets" aria-label="Recommended vectorization presets">
+            <span>Start with a preset</span>
+            <div>
+              <button type="button" className={preset === "logo" ? "is-selected" : ""} onClick={() => selectPreset("logo")} disabled={busy}>Logo</button>
+              <button type="button" className={preset === "signature" ? "is-selected" : ""} onClick={() => selectPreset("signature")} disabled={busy}>Signature</button>
+              <button type="button" className={preset === "illustration" ? "is-selected" : ""} onClick={() => selectPreset("illustration")} disabled={busy}>Illustration</button>
+              {preset === "custom" && <span className="vector-custom-label">Custom</span>}
+            </div>
+          </div>
+
           <fieldset className="vector-mode">
             <legend>Vector style</legend>
             <label className={options.mode === "monochrome" ? "is-selected" : ""}>
@@ -253,10 +308,32 @@ export function PngToSvgWorkspace() {
                 </select>
               </label>
             ) : (
-              <label className="vector-range-label">Threshold <strong>{options.threshold}</strong>
-                <input type="range" min="40" max="230" value={options.threshold} onChange={(event) => updateOptions({ threshold: Number(event.target.value) })} aria-label={`Black and white threshold ${options.threshold}`} disabled={busy} />
-                <small>Controls which pixels become black or white.</small>
-              </label>
+              <div className="vector-settings vector-threshold-settings">
+                <label>Threshold method
+                  <select value={options.thresholdMode} onChange={(event) => {
+                    const thresholdMode = event.target.value as VectorizationOptions["thresholdMode"];
+                    updateOptions({ thresholdMode, threshold: thresholdMode === "adaptive" ? 18 : 160 });
+                  }} disabled={busy}>
+                    <option value="fixed">Manual</option><option value="otsu">Auto contrast</option><option value="adaptive">Uneven lighting</option>
+                  </select>
+                </label>
+                {(options.thresholdMode === "fixed" || options.thresholdMode === "adaptive") && (
+                  <label className="vector-range-label">
+                    {options.thresholdMode === "adaptive" ? "Local sensitivity" : "Threshold"}
+                    <strong>{options.thresholdMode === "adaptive" ? `${options.threshold}%` : options.threshold}</strong>
+                    <input
+                      type="range"
+                      min={options.thresholdMode === "adaptive" ? 5 : 40}
+                      max={options.thresholdMode === "adaptive" ? 35 : 230}
+                      value={options.threshold}
+                      onChange={(event) => updateOptions({ threshold: Number(event.target.value) })}
+                      aria-label={options.thresholdMode === "adaptive" ? `Local sensitivity ${options.threshold} percent` : `Black and white threshold ${options.threshold}`}
+                      disabled={busy}
+                    />
+                    <small>{options.thresholdMode === "adaptive" ? "Adapts the cut-off to local lighting." : "Controls which pixels become black or white."}</small>
+                  </label>
+                )}
+              </div>
             )}
             <label>Detail
               <select value={options.detail} onChange={(event) => updateOptions({ detail: event.target.value as VectorizationOptions["detail"] })} disabled={busy}>

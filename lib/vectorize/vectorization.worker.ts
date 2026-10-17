@@ -86,7 +86,8 @@ async function processImage(buffer: ArrayBuffer, options: VectorizationOptions) 
   }
   const bitmap = await createImageBitmap(new Blob([buffer], { type: "image/png" }));
   try {
-    const scale = Math.min(1, 1200 / Math.max(bitmap.width, bitmap.height));
+    const maxWorkingDimension = options.detail === "high" ? 1600 : options.detail === "medium" ? 1200 : 900;
+    const scale = Math.min(1, maxWorkingDimension / Math.max(bitmap.width, bitmap.height));
     const width = Math.max(1, Math.round(bitmap.width * scale));
     const height = Math.max(1, Math.round(bitmap.height * scale));
     const canvas = new OffscreenCanvas(width, height);
@@ -98,7 +99,7 @@ async function processImage(buffer: ArrayBuffer, options: VectorizationOptions) 
     postStage("Analyzing colors…");
     const imageData = context.getImageData(0, 0, width, height);
     if (options.removeBackground) removeFlatBackground(imageData);
-    if (options.mode === "monochrome") applyThreshold(imageData, options.threshold);
+    if (options.mode === "monochrome") applyThreshold(imageData, options.threshold, options.thresholdMode);
     const palette = options.mode === "color" ? quantizeColors(imageData, options.colors) : undefined;
     context.putImageData(imageData, 0, 0);
 
