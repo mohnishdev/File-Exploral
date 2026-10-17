@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { imageTools, pdfTools } from "@/lib/tools";
+import { getCategoryPath, getToolPath } from "@/lib/seo/tool-routes";
 
 export function MobileNavigation() {
   const [open, setOpen] = useState(false);
@@ -21,13 +22,13 @@ export function MobileNavigation() {
       </button>
       {open && (
         <nav id="mobile-navigation-panel" className="mobile-nav-panel" aria-label="Mobile navigation">
-          <Link href="/tools?category=image" onClick={() => setOpen(false)}>Image tools</Link>
+          <Link href={getCategoryPath("Image")} onClick={() => setOpen(false)}>Image tools</Link>
           {imageTools.slice(0, 3).map((tool) => (
-            <Link key={tool.slug} className="mobile-sub-link" href={`/tools/${tool.slug}`} onClick={() => setOpen(false)}>{tool.shortName}</Link>
+            <Link key={tool.slug} className="mobile-sub-link" href={getToolPath(tool)} onClick={() => setOpen(false)}>{tool.shortName}</Link>
           ))}
-          <Link href="/tools?category=pdf" onClick={() => setOpen(false)}>PDF tools</Link>
+          <Link href={getCategoryPath("PDF")} onClick={() => setOpen(false)}>PDF tools</Link>
           {pdfTools.slice(0, 3).map((tool) => (
-            <Link key={tool.slug} className="mobile-sub-link" href={`/tools/${tool.slug}`} onClick={() => setOpen(false)}>{tool.shortName}</Link>
+            <Link key={tool.slug} className="mobile-sub-link" href={getToolPath(tool)} onClick={() => setOpen(false)}>{tool.shortName}</Link>
           ))}
           <Link href="/guides" onClick={() => setOpen(false)}>Guides</Link>
         </nav>

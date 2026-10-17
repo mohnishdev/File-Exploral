@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Suspense } from "react";
-import { ToolPageLayout } from "@/components/tools/ToolPageLayout";
-import { getTool, tools } from "@/lib/tools";
-import { createPageMetadata } from "@/lib/seo/metadata";
+import { getLegacyToolPath } from "@/lib/seo/tool-routes";
+import { tools } from "@/lib/tools";
 
 export function generateStaticParams() {
   return tools.map((tool) => ({ slug: tool.slug }));
@@ -11,24 +10,23 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/tools/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const tool = getTool(slug);
-  if (!tool) return {};
-  return createPageMetadata({ title: tool.name, description: tool.description, path: `/tools/${tool.slug}` });
+  if (!getLegacyToolPath(slug)) return {};
+  return { robots: { index: false, follow: true } };
 }
 
 export default function ToolPage({ params }: PageProps<"/tools/[slug]">) {
   return (
     <Suspense fallback={<ToolPageFallback />}>
-      <ToolPageContent params={params} />
+      <LegacyToolRedirect params={params} />
     </Suspense>
   );
 }
 
-async function ToolPageContent({ params }: { params: Promise<{ slug: string }> }) {
+async function LegacyToolRedirect({ params }: { params: Promise<{ slug: string }> }): Promise<never> {
   const { slug } = await params;
-  const tool = getTool(slug);
-  if (!tool) notFound();
-  return <ToolPageLayout tool={tool} />;
+  const path = getLegacyToolPath(slug);
+  if (!path) notFound();
+  permanentRedirect(path);
 }
 
 function ToolPageFallback() {

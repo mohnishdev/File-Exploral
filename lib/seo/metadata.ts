@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 
 export const siteName = "Image Converter";
-export const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://imageconverter.example";
+const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? (
+  process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "https://imageconverter.example"
+);
+export const siteUrl = new URL(configuredSiteUrl).toString();
 export const siteDescription =
   "Free online image and PDF tools, with no account required. Simple utilities with clear privacy information.";
 

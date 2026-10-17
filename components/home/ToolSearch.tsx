@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { tools } from "@/lib/tools";
+import { getToolPath } from "@/lib/seo/tool-routes";
 
 export function ToolSearch() {
   const [query, setQuery] = useState("");
@@ -21,7 +22,7 @@ export function ToolSearch() {
         <span className="sr-only">Search image and PDF tools</span>
         <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="What would you like to do?" autoComplete="off" />
       </label>
-      {results.length > 0 && <div className="search-results" role="listbox" aria-label="Matching tools">{results.map((tool) => <Link key={tool.slug} href={`/tools/${tool.slug}`} onClick={() => setQuery("")} role="option"><span>{tool.shortName}</span><ArrowRight size={15} /></Link>)}</div>}
+      {results.length > 0 && <div className="search-results" role="listbox" aria-label="Matching tools">{results.map((tool) => <Link key={tool.slug} href={getToolPath(tool)} onClick={() => setQuery("")} role="option"><span>{tool.shortName}</span><ArrowRight size={15} /></Link>)}</div>}
       {query.trim() && results.length === 0 && <div className="search-results search-empty" role="status">No tools found. Try “PNG” or “PDF”.</div>}
     </div>
   );

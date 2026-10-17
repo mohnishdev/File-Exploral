@@ -10,13 +10,17 @@ import { RelatedTools } from "./RelatedTools";
 import { ToolWorkspace } from "./ToolWorkspace";
 import { toolContent, toolFaqs } from "@/lib/tool-content";
 import { PngToSvgGuide } from "./PngToSvgGuide";
+import { getCategoryPath } from "@/lib/seo/tool-routes";
+import { getToolPageSeo } from "@/lib/seo/tool-pages";
 
-export function ToolPageLayout({ tool }: { tool: Tool }) {
+export function ToolPageLayout({ tool, categoryPath = getCategoryPath(tool.category) }: { tool: Tool; categoryPath?: string }) {
+  const categoryName = tool.category === "Image" ? "Image tools" : "PDF tools";
+  const seo = getToolPageSeo(tool);
   return (
     <main>
       <div className="container tool-page">
         <nav aria-label="Breadcrumb" className="breadcrumbs">
-          <Link href="/">Home</Link><span>/</span><Link href="/tools">Tools</Link><span>/</span><span aria-current="page">{tool.shortName}</span>
+          <Link href="/">Home</Link><span>/</span><Link href={categoryPath}>{categoryName}</Link><span>/</span><span aria-current="page">{tool.shortName}</span>
         </nav>
         <section className="tool-hero">
           <div className="tool-copy">
@@ -36,20 +40,25 @@ export function ToolPageLayout({ tool }: { tool: Tool }) {
         </section>
         <AdSlot variant="middle" />
         <section className="tool-explanation">
-          <span className="eyebrow">A LITTLE MORE DETAIL</span>
-          <h2>{tool.name}: what to know</h2>
-          <p>{toolContent[tool.slug]}</p>
+          <span className="eyebrow">HOW THE TOOL WORKS</span>
+          <h2>{seo?.scope ? `${tool.shortName}: what to expect` : `${tool.name}: what to know`}</h2>
+          <p>{seo?.scope ?? toolContent[tool.slug]}</p>
         </section>
+        {seo && <section className="tool-practical">
+          <span className="eyebrow">PRACTICAL GUIDANCE</span>
+          <h2>{seo.practicalHeading}</h2>
+          <p>{seo.practical}</p>
+        </section>}
         {tool.slug === "png-to-svg" && <PngToSvgGuide />}
         <section className="content-section features-section">
-          <div className="section-heading"><Badge>Made to be useful</Badge><h2>What to expect</h2><p>Just the essentials: an understandable interface and honest information about how the tool works.</p></div>
+          <div className="section-heading"><Badge>Tool details</Badge><h2>What this tool supports</h2><p>{seo?.scope ?? tool.description}</p></div>
           <div className="feature-grid">
-            {tool.features.map((feature) => <Card key={feature} className="feature-card"><span className="check-icon"><Check size={16} /></span><div><h3>{feature}</h3><p>A focused experience without unnecessary steps or account requirements.</p></div></Card>)}
+            {tool.features.map((feature) => <Card key={feature} className="feature-card"><span className="check-icon"><Check size={16} /></span><div><h3>{feature}</h3></div></Card>)}
           </div>
         </section>
-        <section className="format-strip"><div><span className="eyebrow">SUPPORTED FORMATS</span><h2>Designed around {tool.keywords.join(" and ")}</h2></div><div className="format-list">{tool.formats.map((format) => <span key={format}>{format}</span>)}</div></section>
+        <section className="format-strip"><div><span className="eyebrow">INPUT &amp; OUTPUT FORMATS</span><h2>Files supported by this tool</h2></div><div className="format-list">{tool.formats.map((format) => <span key={format}>{format}</span>)}</div></section>
         <section className="privacy-panel"><div className="privacy-illustration"><LockKeyhole size={23} /></div><div><span className="eyebrow">A privacy-first approach</span><h2>Your files stay on this device.</h2><p>This tool processes the file in your browser. The file is not sent to our servers or stored in an account. Resetting the tool clears its temporary previews and file references from this page.</p></div></section>
-        <ToolFAQ faqs={[...tool.faqs.slice(0, 2), ...(toolFaqs[tool.slug] ?? [])]} />
+        <ToolFAQ faqs={[...(seo?.faqs ?? []), ...(toolFaqs[tool.slug] ?? []), ...tool.faqs]} />
         <RelatedTools slugs={tool.related} />
         <AdSlot variant="bottom" />
       </div>

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { ArrowRight, Check, FileImage } from "lucide-react";
 import { AdSlot } from "@/components/ads/AdSlot";
 import { createPageMetadata } from "@/lib/seo/metadata";
+import { getToolPathBySlug } from "@/lib/seo/tool-routes";
 
 export const metadata: Metadata = createPageMetadata({
   title: "PNG vs JPG: which image format should you use?",
@@ -31,7 +32,7 @@ export default function PngVsJpgGuide() {
       </div>
       <h2>Can you change one format to the other?</h2>
       <p>Yes, image software can export PNG images as JPG or JPG images as PNG. A format conversion does not restore image detail that was lost when a JPG was compressed, and JPG does not preserve transparent pixels.</p>
-      <p>Need a conversion tool? Use the <Link href="/tools/png-to-jpg">PNG to JPG converter</Link> or <Link href="/tools/jpg-to-png">JPG to PNG converter</Link> to process an image in your browser.</p>
+      <p>Need a conversion tool? Use the <Link href={getToolPathBySlug("png-to-jpg")}>PNG to JPG converter</Link> or <Link href={getToolPathBySlug("jpg-to-png")}>JPG to PNG converter</Link> to process an image in your browser.</p>
     </div>
     <AdSlot variant="bottom" />
     <Link href="/guides" className="text-link article-back"><ArrowRight size={16} /> Browse more guides</Link>

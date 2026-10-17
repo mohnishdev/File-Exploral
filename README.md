@@ -29,12 +29,13 @@ Set `NEXT_PUBLIC_SITE_URL` to the canonical origin before deploying so metadata,
 
 ## Project structure
 
-- `app/` contains the homepage, tool catalog and detail routes, guides, 404, robots, and sitemap.
+- `app/` contains the homepage, `/image-tools` and `/pdf-tools` category hubs, canonical tool routes, guides, 404, robots, and sitemap. Previous `/tools/<slug>` URLs permanently redirect to the canonical category route.
 - `components/layout/` contains the shared brand, responsive header, navigation, and footer.
 - `components/tools/` contains reusable tool UI and isolated browser image/PDF workspaces.
 - `components/ads/` contains reserved, labeled ad placements. No ad network is currently integrated.
 - `lib/tools.ts` is the shared source of tool descriptions, formats, FAQs, and related links.
-- `lib/seo/` centralizes canonical and social metadata.
+- `lib/seo/` centralizes canonical routes, tool-specific metadata/content, social metadata, and structured data. Set `NEXT_PUBLIC_SITE_URL` to the production origin before deployment; Vercel's production URL is used when available, otherwise canonical tags use the reserved `.example` fallback.
+- `lib/seo/tool-pages.ts` holds tool-specific search snippets, usage guidance, limitations, and FAQs; canonical tool routes are generated from the shared catalog and included in `app/sitemap.ts`.
 - `lib/image/` contains reusable Canvas-based conversion, resize, compression, crop, rotate, and image-validation helpers.
 - `lib/vectorize/` contains the browser-side PNG preprocessing, ImageTracerJS worker adapter, and generated-SVG sanitizer/optimizer. Generated paths are grouped by adjacent fill color, redundant path styling is removed, and coordinates are rounded to a practical precision to reduce SVG size. The PNG-to-SVG workspace defaults to a color-preserving, high-detail logo preset; signature artwork can use adaptive monochrome thresholding. Optional background removal detects flat backgrounds even when a transparent border surrounds them. Vectorization remains an approximation best suited to logos, icons, signatures, line art, and flat illustrations. Photographs and gradients are simplified and may create large SVG files.
 - `lib/pdf/` contains local PDF.js rendering and pdf-lib manipulation for page editing, merge, split, structural repacking, PDF/image conversion, and image-to-PDF.

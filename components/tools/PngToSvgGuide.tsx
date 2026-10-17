@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getToolPathBySlug } from "@/lib/seo/tool-routes";
 
 export function PngToSvgGuide() {
   return (
@@ -18,7 +19,7 @@ export function PngToSvgGuide() {
       <article>
         <h2>Choose the right image and settings</h2>
         <p>Logos with solid fills, icons, signatures, line art, and flat-color illustrations tend to make the most useful SVGs. A clean, high-resolution source with clear edges helps. For a single-color mark, try Black &amp; white and tune Threshold until fine strokes remain connected. For a flat illustration, choose Color and start with a small color count. Increase Detail only when the shapes need it.</p>
-        <p>Photographs, soft shadows, textures, and gradients contain subtle pixel changes that do not map neatly to a few paths. They may become posterized, visually different, or much larger than the PNG. Use a raster format such as <Link href="/tools/png-to-webp">PNG to WebP</Link> when you need to preserve photographic appearance.</p>
+        <p>Photographs, soft shadows, textures, and gradients contain subtle pixel changes that do not map neatly to a few paths. They may become posterized, visually different, or much larger than the PNG. Use a raster format such as <Link href={getToolPathBySlug("png-to-webp")}>PNG to WebP</Link> when you need to preserve photographic appearance.</p>
       </article>
       <article>
         <h2>PNG vs SVG: which should you use?</h2>
@@ -26,7 +27,7 @@ export function PngToSvgGuide() {
       </article>
       <nav aria-label="Related image tools">
         <h2>Related tools</h2>
-        <p>Prepare an image with the <Link href="/tools/image-resizer">Image Resizer</Link>, reduce a raster file with the <Link href="/tools/image-compressor">Image Compressor</Link>, or export a modern raster copy with <Link href="/tools/png-to-webp">PNG to WebP</Link>.</p>
+        <p>Prepare an image with the <Link href={getToolPathBySlug("image-resizer")}>Image Resizer</Link>, reduce a raster file with the <Link href={getToolPathBySlug("image-compressor")}>Image Compressor</Link>, or export a modern raster copy with <Link href={getToolPathBySlug("png-to-webp")}>PNG to WebP</Link>.</p>
       </nav>
     </section>
   );

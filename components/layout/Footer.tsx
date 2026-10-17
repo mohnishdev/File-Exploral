@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Brand } from "./Brand";
+import { getCategoryPath } from "@/lib/seo/tool-routes";
 
 export function Footer() {
   return (
@@ -11,15 +12,15 @@ export function Footer() {
         </div>
         <div className="footer-column">
           <h2>Explore</h2>
-          <Link href="/tools?category=image">Image tools</Link>
-          <Link href="/tools?category=pdf">PDF tools</Link>
+          <Link href={getCategoryPath("Image")}>Image tools</Link>
+          <Link href={getCategoryPath("PDF")}>PDF tools</Link>
           <Link href="/guides">Guides</Link>
         </div>
         <div className="footer-column">
           <h2>Popular tools</h2>
-          <Link href="/tools/png-to-jpg">PNG to JPG</Link>
-          <Link href="/tools/image-resizer">Image resizer</Link>
-          <Link href="/tools/pdf-merge">Merge PDF</Link>
+          <Link href="/image-tools/png-to-jpg">PNG to JPG</Link>
+          <Link href="/image-tools/image-resizer">Image resizer</Link>
+          <Link href="/pdf-tools/merge-pdf">Merge PDF</Link>
         </div>
         <div className="footer-note">
           <span className="privacy-dot" />

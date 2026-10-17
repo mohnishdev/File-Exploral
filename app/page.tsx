@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
 import { imageTools, pdfTools } from "@/lib/tools";
 import { createPageMetadata, siteDescription } from "@/lib/seo/metadata";
+import { getCategoryPath, getToolPathBySlug } from "@/lib/seo/tool-routes";
 
 export const metadata = createPageMetadata({ title: "Free online image & PDF tools", description: siteDescription });
 
@@ -34,9 +35,9 @@ export default function Home() {
             <ToolSearch />
             <div className="hero-shortcuts" aria-label="Popular tools">
               <span>Popular:</span>
-              <Link href="/tools/png-to-jpg">PNG to JPG</Link>
-              <Link href="/tools/image-compressor">Compress image</Link>
-              <Link href="/tools/pdf-merge">Merge PDF</Link>
+              <Link href={getToolPathBySlug("png-to-jpg")}>PNG to JPG</Link>
+              <Link href={getToolPathBySlug("image-compressor")}>Compress image</Link>
+              <Link href={getToolPathBySlug("pdf-merge")}>Merge PDF</Link>
             </div>
             <div className="hero-note"><Check size={15} /> Free to use <span /> No account <span /> Files stay in your browser</div>
           </div>
@@ -63,13 +64,13 @@ export default function Home() {
 
       <section className="section category-section" id="image-tools">
         <div className="container">
-          <div className="section-heading section-heading-row"><div><span className="eyebrow">IMAGES, MADE MORE USEFUL</span><h2>Image tools</h2><p>Change formats, fine-tune dimensions, and get images ready to use.</p></div><Link href="/tools?category=image" className="text-link">Explore image tools <ArrowRight size={16} /></Link></div>
+          <div className="section-heading section-heading-row"><div><span className="eyebrow">IMAGES, MADE MORE USEFUL</span><h2>Image tools</h2><p>Change formats, fine-tune dimensions, and get images ready to use.</p></div><Link href={getCategoryPath("Image")} className="text-link">Explore image tools <ArrowRight size={16} /></Link></div>
           <div className="tool-grid">{imageTools.map((tool) => <ToolCard tool={tool} key={tool.slug} />)}</div>
         </div>
       </section>
 
       <section className="section container pdf-section" id="pdf-tools">
-        <div className="section-heading section-heading-row"><div><span className="eyebrow">DOCUMENTS, WITHOUT THE BUSYWORK</span><h2>PDF tools</h2><p>Prepare, arrange, and convert documents in a few clear steps.</p></div><Link href="/tools?category=pdf" className="text-link">Explore PDF tools <ArrowRight size={16} /></Link></div>
+        <div className="section-heading section-heading-row"><div><span className="eyebrow">DOCUMENTS, WITHOUT THE BUSYWORK</span><h2>PDF tools</h2><p>Prepare, arrange, and convert documents in a few clear steps.</p></div><Link href={getCategoryPath("PDF")} className="text-link">Explore PDF tools <ArrowRight size={16} /></Link></div>
         <div className="tool-grid">{pdfTools.map((tool) => <ToolCard tool={tool} key={tool.slug} />)}</div>
       </section>
 
