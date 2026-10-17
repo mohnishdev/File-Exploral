@@ -8,11 +8,12 @@ import { FilePicker } from "./FilePicker";
 type UploadDropzoneProps = {
   accept: string[];
   onFile: (file: File) => void;
+  onError?: (message: string) => void;
   maxSize?: number;
   disabled?: boolean;
 };
 
-export function UploadDropzone({ accept, onFile, maxSize, disabled = false }: UploadDropzoneProps) {
+export function UploadDropzone({ accept, onFile, onError, maxSize, disabled = false }: UploadDropzoneProps) {
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState("");
   const dragDepth = useRef(0);
@@ -23,6 +24,7 @@ export function UploadDropzone({ accept, onFile, maxSize, disabled = false }: Up
     const result = validateFile(file, accept, maxSize);
     if (!result.valid) {
       setError(result.message);
+      onError?.(result.message);
       return;
     }
     setError("");

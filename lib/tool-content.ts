@@ -1,4 +1,5 @@
 export const toolContent: Record<string, string> = {
+  "png-to-svg": "PNG stores an image as a grid of colored pixels. SVG describes artwork with scalable paths and shapes. This tool analyzes the PNG, simplifies its colors, and traces the visible regions into vector paths; it does not place the original bitmap inside the SVG. Vectorization is an approximation, not a lossless format conversion. Simple high-contrast artwork usually gives the cleanest result, while photographs and gradients can produce many paths and a less faithful image.",
   "png-to-jpg": "PNG is a lossless format that preserves sharp edges and transparent pixels. JPG uses lossy compression and is widely supported for photographs, often at a smaller file size. Converting to JPG flattens transparent areas onto a white background; it cannot preserve transparency. Adjust the quality to choose a balance between detail and file size. The original PNG is unchanged.",
   "jpg-to-png": "PNG can be useful for graphics, editing workflows, and apps that require a lossless image. Converting a JPG to PNG does not restore detail already discarded by JPG compression, and the resulting file is often larger. The original image remains unchanged.",
   "png-to-webp": "WebP supports transparency and offers both lossy and lossless encoding. The quality setting controls lossy WebP output: lower values generally create smaller files, while higher values preserve more image detail. Check support in your destination app before replacing PNG assets.",
@@ -20,6 +21,12 @@ export const toolContent: Record<string, string> = {
 };
 
 export const toolFaqs: Record<string, { question: string; answer: string }[]> = {
+  "png-to-svg": [
+    { question: "What is the difference between PNG and SVG?", answer: "PNG is a raster format made of pixels; SVG is a vector format described by shapes and paths. SVG artwork can scale without pixelation, but tracing a PNG estimates vector shapes and may simplify the original." },
+    { question: "Which images work best for vectorization?", answer: "Logos, icons, signatures, line drawings, and flat-color illustrations with clear edges. Photographs, textures, and gradients are harder to represent as paths." },
+    { question: "Can I get a clean SVG from a logo?", answer: "Start with a large, sharp PNG on a plain or transparent background. Use black and white for single-color artwork, or Color with a small palette for flat logos. Adjust threshold or detail if edges look too thin or too complex." },
+    { question: "Does the SVG include an embedded PNG?", answer: "No. The SVG contains generated vector paths rather than an embedded raster image. The path-based result may look different from the original, especially for photographs." },
+  ],
   "png-to-jpg": [{ question: "What happens to transparent pixels?", answer: "JPG does not support transparency. Transparent areas are composited against white in the output." }],
   "jpg-to-png": [{ question: "Will converting JPG to PNG improve quality?", answer: "No. PNG avoids further lossy compression, but it cannot restore detail lost when the JPG was originally encoded." }],
   "pdf-compress": [{ question: "Will this always make my PDF smaller?", answer: "No. The browser-side operation packs PDF objects more compactly but does not downsample embedded images. Results vary and can sometimes be larger." }],

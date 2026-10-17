@@ -3,6 +3,11 @@
 import dynamic from "next/dynamic";
 import type { ToolCategory } from "@/lib/tools";
 
+const PngToSvgWorkspace = dynamic(
+  () => import("./PngToSvgWorkspace").then((module) => module.PngToSvgWorkspace),
+  { loading: () => <div className="interactive-loading" role="status">Loading vector tools…</div> },
+);
+
 const ImageToolWorkspace = dynamic(
   () => import("./ImageToolWorkspace").then((module) => module.ImageToolWorkspace),
   { loading: () => <div className="interactive-loading" role="status">Loading image tools…</div> },
@@ -14,5 +19,6 @@ const PdfToolWorkspace = dynamic(
 );
 
 export function ToolWorkspace({ slug, category }: { slug: string; category: ToolCategory }) {
+  if (slug === "png-to-svg") return <PngToSvgWorkspace />;
   return category === "PDF" ? <PdfToolWorkspace slug={slug} /> : <ImageToolWorkspace slug={slug} />;
 }

@@ -9,6 +9,7 @@ import { ToolFAQ } from "./ToolFAQ";
 import { RelatedTools } from "./RelatedTools";
 import { ToolWorkspace } from "./ToolWorkspace";
 import { toolContent, toolFaqs } from "@/lib/tool-content";
+import { PngToSvgGuide } from "./PngToSvgGuide";
 
 export function ToolPageLayout({ tool }: { tool: Tool }) {
   return (
@@ -39,6 +40,7 @@ export function ToolPageLayout({ tool }: { tool: Tool }) {
           <h2>{tool.name}: what to know</h2>
           <p>{toolContent[tool.slug]}</p>
         </section>
+        {tool.slug === "png-to-svg" && <PngToSvgGuide />}
         <section className="content-section features-section">
           <div className="section-heading"><Badge>Made to be useful</Badge><h2>What to expect</h2><p>Just the essentials: an understandable interface and honest information about how the tool works.</p></div>
           <div className="feature-grid">

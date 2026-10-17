@@ -10,6 +10,7 @@ import {
   RotateCw,
   ScanLine,
   Scissors,
+  Shapes,
 } from "lucide-react";
 
 export type ToolCategory = "Image" | "PDF";
@@ -44,6 +45,33 @@ const commonFaqs = [
 
 export const tools: Tool[] = [
   {
+    slug: "png-to-svg",
+    name: "PNG to SVG Converter",
+    shortName: "PNG to SVG",
+    description:
+      "Turn a PNG logo, icon, or illustration into editable SVG vector paths in your browser. Adjust colors and detail, then preview and download the result.",
+    category: "Image",
+    icon: Shapes,
+    formats: ["PNG", "SVG"],
+    features: ["Real vector paths, not an embedded image", "Adjustable color and detail settings", "Private browser-side processing"],
+    steps: ["Choose a PNG graphic", "Adjust tracing settings", "Preview and download your SVG"],
+    related: ["image-resizer", "image-compressor", "png-to-webp"],
+    faqs: [
+      ...commonFaqs,
+      {
+        question: "Will this make a perfect vector copy?",
+        answer:
+          "No. Vectorization estimates shapes and colors from pixels. It works best for logos, icons, line art, signatures, and flat illustrations; photographs and gradients can produce simplified, larger SVGs.",
+      },
+      {
+        question: "Does the SVG contain my original PNG?",
+        answer:
+          "No. The result contains generated vector paths. The tool does not embed the source PNG in the SVG.",
+      },
+    ],
+    keywords: ["PNG", "SVG"],
+  },
+  {
     slug: "png-to-jpg",
     name: "PNG to JPG Converter",
     shortName: "PNG to JPG",
@@ -60,7 +88,7 @@ export const tools: Tool[] = [
       {
         question: "Will transparency be preserved?",
         answer:
-          "JPG does not support transparency. When this tool launches, transparent areas will need to be displayed against a solid background.",
+          "JPG does not support transparency. Transparent areas are composited against white in the output.",
       },
     ],
     keywords: ["PNG", "JPG"],

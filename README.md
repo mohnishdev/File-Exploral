@@ -1,6 +1,6 @@
 # Image Converter
 
-An SEO-first foundation for free online image and PDF utilities. The project has no authentication, database, or permanent file storage. Conversion tools are intentionally placeholders in this phase.
+An SEO-first collection of free online image and PDF utilities. The project has no authentication, database, or permanent file storage. Image operations, PDF tools, and PNG vectorization run locally in the browser.
 
 ## Requirements
 
@@ -36,10 +36,11 @@ Set `NEXT_PUBLIC_SITE_URL` to the canonical origin before deploying so metadata,
 - `lib/tools.ts` is the shared source of tool descriptions, formats, FAQs, and related links.
 - `lib/seo/` centralizes canonical and social metadata.
 - `lib/image/` contains reusable Canvas-based conversion, resize, compression, crop, rotate, and image-validation helpers.
+- `lib/vectorize/` contains the browser-side PNG preprocessing, ImageTracerJS worker adapter, and generated-SVG sanitizer. Vectorization is best suited to logos, icons, signatures, line art, and flat illustrations; photographs and gradients are simplified and may create large SVG files.
 - `lib/pdf/` contains local PDF.js rendering and pdf-lib manipulation for page editing, merge, split, structural repacking, PDF/image conversion, and image-to-PDF.
 - `lib/processing/` defines browser and temporary-server processing contracts. No processing backend is implemented; the temporary processor contract always attempts cleanup and surfaces cleanup failures.
 - `lib/validation/` contains general reusable file validation.
 
 ## Tool availability
 
-Image and PDF tools process selected files locally in the browser; no upload endpoint or persistent file storage is used. PDF structural repacking does not downsample/recompress embedded images and cannot guarantee a smaller file. PNG-to-SVG/vectorization is intentionally not implemented.
+Image and PDF tools process selected files locally in the browser; no upload endpoint or persistent file storage is used. PNG-to-SVG uses the open-source, Unlicense ImageTracerJS engine in a Web Worker and outputs sanitized vector paths rather than embedding the PNG. It is an approximation, not a perfect conversion, and is not optimized for photographic images. PDF structural repacking does not downsample/recompress embedded images and cannot guarantee a smaller file.

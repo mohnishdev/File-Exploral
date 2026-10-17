@@ -9,7 +9,7 @@ import { createPageMetadata } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Free image & PDF tools",
-  description: "Explore free online image and PDF tools. No accounts or subscriptions. Individual tools are marked clearly while they are in development.",
+  description: "Explore free online image and PDF tools that process files in your browser. No accounts or subscriptions required.",
   path: "/tools",
 });
 
@@ -24,7 +24,7 @@ async function ToolsListing({ searchParams }: { searchParams: Promise<Record<str
   return (
     <main><div className="container listing-page">
       <div className="breadcrumbs"><Link href="/">Home</Link><span>/</span><span aria-current="page">Tools</span></div>
-      <section className="listing-hero"><span className="eyebrow">THE TOOLBOX</span><h1>A tool for that.</h1><p>Free online tools for common image and PDF tasks. No account required. Process images and documents locally in your browser.</p><div className="listing-tabs"><Link className={!category ? "active" : ""} href="/tools">All tools <span>18</span></Link><Link className={category === "image" ? "active" : ""} href="/tools?category=image">Image tools <span>10</span></Link><Link className={category === "pdf" ? "active" : ""} href="/tools?category=pdf">PDF tools <span>8</span></Link></div></section>
+      <section className="listing-hero"><span className="eyebrow">THE TOOLBOX</span><h1>A tool for that.</h1><p>Free online tools for common image and PDF tasks. No account required. Process images and documents locally in your browser.</p><div className="listing-tabs"><Link className={!category ? "active" : ""} href="/tools">All tools <span>{imageTools.length + pdfTools.length}</span></Link><Link className={category === "image" ? "active" : ""} href="/tools?category=image">Image tools <span>{imageTools.length}</span></Link><Link className={category === "pdf" ? "active" : ""} href="/tools?category=pdf">PDF tools <span>{pdfTools.length}</span></Link></div></section>
       <AdSlot variant="top" />
       <ToolCatalog showImages={showImages} showPdfs={showPdfs} />
       <div className="listing-note"><p>All tools are free to use and don’t require an account.</p><Link href="/guides">Read about our privacy approach <ArrowRight size={15} /></Link></div>
@@ -36,7 +36,7 @@ function ToolsFallback() {
   return (
     <main><div className="container listing-page">
       <div className="breadcrumbs"><Link href="/">Home</Link><span>/</span><span aria-current="page">Tools</span></div>
-      <section className="listing-hero"><span className="eyebrow">THE TOOLBOX</span><h1>A tool for that.</h1><p>Free online tools for common image and PDF tasks. No account required. Process images and documents locally in your browser.</p><div className="listing-tabs"><Link className="active" href="/tools">All tools <span>18</span></Link><Link href="/tools?category=image">Image tools <span>10</span></Link><Link href="/tools?category=pdf">PDF tools <span>8</span></Link></div></section>
+      <section className="listing-hero"><span className="eyebrow">THE TOOLBOX</span><h1>A tool for that.</h1><p>Free online tools for common image and PDF tasks. No account required. Process images and documents locally in your browser.</p><div className="listing-tabs"><Link className="active" href="/tools">All tools <span>{imageTools.length + pdfTools.length}</span></Link><Link href="/tools?category=image">Image tools <span>{imageTools.length}</span></Link><Link href="/tools?category=pdf">PDF tools <span>{pdfTools.length}</span></Link></div></section>
       <AdSlot variant="top" />
       <ToolCatalog showImages showPdfs />
       <div className="listing-note"><p>All tools are free to use and don’t require an account.</p><Link href="/guides">Read about our privacy approach <ArrowRight size={15} /></Link></div>
@@ -46,7 +46,7 @@ function ToolsFallback() {
 
 function ToolCatalog({ showImages, showPdfs }: { showImages: boolean; showPdfs: boolean }) {
   return <>
-    {showImages && <section className="listing-section"><div className="listing-section-heading"><h2>Image tools</h2><span>7 tools</span></div><div className="tool-grid">{imageTools.map((tool) => <ToolCard key={tool.slug} tool={tool} />)}</div></section>}
-    {showPdfs && <section className="listing-section"><div className="listing-section-heading"><h2>PDF tools</h2><span>6 tools</span></div><div className="tool-grid">{pdfTools.map((tool) => <ToolCard key={tool.slug} tool={tool} />)}</div></section>}
+    {showImages && <section className="listing-section"><div className="listing-section-heading"><h2>Image tools</h2><span>{imageTools.length} tools</span></div><div className="tool-grid">{imageTools.map((tool) => <ToolCard key={tool.slug} tool={tool} />)}</div></section>}
+    {showPdfs && <section className="listing-section"><div className="listing-section-heading"><h2>PDF tools</h2><span>{pdfTools.length} tools</span></div><div className="tool-grid">{pdfTools.map((tool) => <ToolCard key={tool.slug} tool={tool} />)}</div></section>}
   </>;
 }

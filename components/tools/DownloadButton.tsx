@@ -6,9 +6,10 @@ type DownloadButtonProps = {
   disabled?: boolean;
   format?: string;
   size?: string;
+  onDownload?: () => void;
 };
 
-export function DownloadButton({ href, filename, disabled = false, format, size }: DownloadButtonProps) {
+export function DownloadButton({ href, filename, disabled = false, format, size, onDownload }: DownloadButtonProps) {
   return (
     <div className="download-action">
       <a
@@ -17,6 +18,7 @@ export function DownloadButton({ href, filename, disabled = false, format, size 
         download={filename}
         aria-disabled={disabled}
         onClick={disabled ? (event) => event.preventDefault() : undefined}
+        onClickCapture={disabled ? undefined : onDownload}
       >
         <Download size={16} /> Download {format ?? "file"}
       </a>
