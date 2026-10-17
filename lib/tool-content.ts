@@ -1,0 +1,30 @@
+export const toolContent: Record<string, string> = {
+  "png-to-jpg": "PNG is a lossless format that preserves sharp edges and transparent pixels. JPG uses lossy compression and is widely supported for photographs, often at a smaller file size. Converting to JPG flattens transparent areas onto a white background; it cannot preserve transparency. Adjust the quality to choose a balance between detail and file size. The original PNG is unchanged.",
+  "jpg-to-png": "PNG can be useful for graphics, editing workflows, and apps that require a lossless image. Converting a JPG to PNG does not restore detail already discarded by JPG compression, and the resulting file is often larger. The original image remains unchanged.",
+  "png-to-webp": "WebP supports transparency and offers both lossy and lossless encoding. The quality setting controls lossy WebP output: lower values generally create smaller files, while higher values preserve more image detail. Check support in your destination app before replacing PNG assets.",
+  "jpg-to-webp": "WebP is supported by modern browsers and can produce smaller photographs than a similarly viewed JPG. Use the quality control to choose a balance that suits your image. Conversion cannot restore detail already lost in the source JPG.",
+  "webp-to-png": "PNG is useful when a receiving app does not accept WebP or when you need a broadly supported lossless file. Converting does not recreate details removed by lossy WebP encoding, and the PNG may be larger. Transparent areas are retained.",
+  "webp-to-jpg": "JPG remains a practical choice for sharing photographs with apps that do not accept WebP. JPG does not support transparency, so transparent areas are rendered against white. Choose a quality level that balances appearance and size.",
+  "image-resizer": "Resizing changes pixel dimensions, not just the way an image is displayed. Keep the aspect ratio locked to avoid stretching. Increasing dimensions cannot add genuine detail; reducing dimensions can lower both resolution and file size.",
+  "image-compressor": "Image compression trades file size against image data. JPG and lossy WebP quality controls can reduce size by discarding detail; PNG is lossless and may not shrink through a quality slider. Compare the preview and output size before downloading.",
+  "image-rotator": "Rotation and flipping change image orientation without sending it to a server. Quarter-turns swap the output width and height. Exporting to a lossy format can change image quality, so choose an appropriate output format.",
+  "image-cropper": "Cropping removes pixels outside the selected region. Aspect-ratio presets help prepare common shapes, while free crop lets you choose custom proportions. Cropped pixels are not included in the downloaded image.",
+  "pdf-editor": "Use the page rail to inspect and reorder document pages. Rotate or remove individual pages, then download a newly assembled PDF. Text and page content are not rewritten; edits are limited to page arrangement, rotation, and removal.",
+  "pdf-merge": "Merging is useful for combining related forms, reports, or scanned documents into one file. Add at least two PDFs and drag them into the order you want. Page content is copied in the browser; encrypted or damaged documents may not be supported.",
+  "pdf-split": "Extract only the pages you need by entering individual page numbers or ranges, such as 1, 3-5, 8. The original document is not modified. The extracted pages are assembled into a separate PDF in their original order.",
+  "pdf-compress": "This browser tool re-saves the PDF with compact object streams. It does not downsample embedded photos or recompress scanned pages, so it cannot reliably reduce every PDF and may produce a similar or larger file. Compare the result size before using it.",
+  "pdf-to-jpg": "PDF pages are rendered as raster images, which are convenient for previews and sharing but do not retain selectable text. Choose the pages, resolution, and JPG quality. Multiple pages are packaged together in a ZIP file.",
+  "pdf-to-png": "PDF pages are rendered as raster PNG images, which preserve crisp edges and do not use lossy image compression. Choose the pages and resolution. Multiple output pages are packaged together in a ZIP file.",
+  "jpg-to-pdf": "A PDF is useful for sending several photos as one document or preparing images for print. Arrange the images, select the page orientation and margins, and choose whether each image fits within or fills the page.",
+  "png-to-pdf": "A PDF is a convenient way to send multiple PNG graphics as one document. Arrange the images, choose page orientation and margins, and set how each graphic fits. Transparent image areas remain transparent in the embedded page image.",
+};
+
+export const toolFaqs: Record<string, { question: string; answer: string }[]> = {
+  "png-to-jpg": [{ question: "What happens to transparent pixels?", answer: "JPG does not support transparency. Transparent areas are composited against white in the output." }],
+  "jpg-to-png": [{ question: "Will converting JPG to PNG improve quality?", answer: "No. PNG avoids further lossy compression, but it cannot restore detail lost when the JPG was originally encoded." }],
+  "pdf-compress": [{ question: "Will this always make my PDF smaller?", answer: "No. The browser-side operation packs PDF objects more compactly but does not downsample embedded images. Results vary and can sometimes be larger." }],
+  "pdf-editor": [{ question: "Can I edit text inside the PDF?", answer: "This editor changes page order, rotation, and page selection. It does not edit text or alter content inside a page." }],
+  "pdf-to-jpg": [{ question: "How are multiple pages downloaded?", answer: "Selected pages are rendered as JPG images in your browser and bundled into one ZIP file." }],
+  "pdf-to-png": [{ question: "How are multiple pages downloaded?", answer: "Selected pages are rendered as PNG images in your browser and bundled into one ZIP file." }],
+  "pdf-merge": [{ question: "Can I change the order of files?", answer: "Yes. Drag files into the order you want before selecting Merge PDFs." }],
+};
