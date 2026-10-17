@@ -35,7 +35,7 @@ function medianCut(colors: ColorBin[], limit: number): Color[] {
     const midpoint = box.reduce((sum, color) => sum + color.count, 0) / 2;
     let accumulated = 0;
     let splitAt = 1;
-    for (; splitAt < box.length; splitAt++) {
+    for (; splitAt < box.length - 1; splitAt++) {
       accumulated += box[splitAt - 1].count;
       if (accumulated >= midpoint) break;
     }
@@ -83,6 +83,16 @@ export function quantizeColors(imageData: ImageData, requestedColors: VectorColo
     count: bin.count,
   }));
   const palette = samples.length ? medianCut(samples, Math.min(count, samples.length)) : [];
+  if (palette.some((color) =>
+    !Number.isFinite(color.r) ||
+    !Number.isFinite(color.g) ||
+    !Number.isFinite(color.b) ||
+    color.r < 0 || color.r > 255 ||
+    color.g < 0 || color.g > 255 ||
+    color.b < 0 || color.b > 255
+  )) {
+    throw new Error("The image colors could not be analyzed. Try fewer colors or a different PNG.");
+  }
   if (hasTransparency) palette.push({ r: 0, g: 0, b: 0, a: 0 });
 
   for (let index = 0; index < pixels.length; index += 4) {
