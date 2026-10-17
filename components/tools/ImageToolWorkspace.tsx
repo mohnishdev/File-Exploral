@@ -16,6 +16,7 @@ import { resizeImage, getResizedDimensions } from "@/lib/image/resize";
 import { rotateImage } from "@/lib/image/rotate";
 import { extensionForFormat, formatBytes, formatLabel, reductionPercent, validateImageFile } from "@/lib/image/validation";
 import type { ImageFormat, ImageResult, ImageSource } from "@/lib/image/types";
+import { getTool } from "@/lib/tools";
 
 type Props = { slug: string };
 
@@ -43,6 +44,8 @@ const ratios = [
 ];
 
 export function ImageToolWorkspace({ slug }: Props) {
+  const workspaceTool = getTool(slug);
+  const WorkspaceIcon = workspaceTool?.icon ?? Crop;
   const [file, setFile] = useState<File>();
   const [source, setSource] = useState<ImageSource>();
   const [sourceUrl, setSourceUrl] = useState("");
@@ -229,21 +232,27 @@ export function ImageToolWorkspace({ slug }: Props) {
   return (
     <Card className="interactive-workspace">
       <div className="workspace-heading">
-        <div className="workspace-icon"><Crop size={20} /></div>
-        <div><strong>{slug.replaceAll("-", " ")}</strong><span>Processed locally in your browser</span></div>
+        <div className="workspace-icon"><WorkspaceIcon size={20} /></div>
+        <div><strong>{workspaceTool?.shortName ?? "Image tool"}</strong><span>Processed locally in your browser</span></div>
         {file && <button className="text-button reset-button" type="button" onClick={reset}>Reset</button>}
       </div>
 
-      {!file && <UploadDropzone accept={accept} onFile={handleFile} disabled={busy} />}
+      {!file && <UploadDropzone
+        accept={accept}
+        onFile={handleFile}
+        disabled={busy}
+        title={slug === "image-resizer" ? "Drop an image to resize" : slug === "image-compressor" ? "Drop an image to compress" : "Drop an image to get started"}
+        description={`${accept.some((type) => type.includes("webp")) ? "PNG, JPG, or WebP" : accept[0].includes("png") ? "PNG" : "JPG"} · or choose from your device`}
+      />}
       {!file && status && <p className="workflow-status" role="status">{status}</p>}
       {!file && error && <p className="upload-error" role="alert">{error}</p>}
 
       {file && source && (
         <div className="image-workflow">
-          <div className="image-preview-card">
+          {!result && <div className="image-preview-card">
             <img src={sourceUrl} alt={`Preview of ${file.name}`} className="image-preview" />
-            <div className="image-preview-meta"><span>{file.name}</span><span>{source.width} × {source.height}</span><span>{formatBytes(file.size)}</span></div>
-          </div>
+            <div className="image-preview-meta"><span>{file.name}</span><span>{source.width} × {source.height} px</span><span>{formatBytes(file.size)}</span></div>
+          </div>}
 
           {isResizer && <div className="image-options">
             <div className="option-tabs"><button type="button" className={resizeMode === "dimensions" ? "active" : ""} onClick={() => setResizeMode("dimensions")}>Dimensions</button><button type="button" className={resizeMode === "percentage" ? "active" : ""} onClick={() => setResizeMode("percentage")}>Percentage</button></div>
@@ -292,12 +301,23 @@ export function ImageToolWorkspace({ slug }: Props) {
             {error && <p role="alert" className="upload-error">{error}</p>}
           </div>
 
-          {result && resultUrl && <div className="result-card">
-            <div className="result-heading"><span className="result-success">Ready to download</span><span>{formatLabel(result.format)} · {result.width} × {result.height}</span></div>
-            <img src={resultUrl} alt={`Processed ${formatLabel(result.format)} result`} className="image-preview result-preview" />
-            <div className="size-comparison"><span>Original <strong>{formatBytes(file.size)}</strong></span><span>New file <strong>{formatBytes(result.blob.size)}</strong></span>{isCompressor && <span className={reductionPercent(file.size, result.blob.size) >= 0 ? "size-saving" : "size-increase"}>{reductionPercent(file.size, result.blob.size) >= 0 ? `${reductionPercent(file.size, result.blob.size)}% smaller` : `${Math.abs(reductionPercent(file.size, result.blob.size))}% larger`}</span>}</div>
+          {result && resultUrl && <section className="result-card" aria-label="Image comparison and download">
+            <div className="result-heading"><span className="result-success">Your result is ready</span><span>{formatLabel(result.format)} · {result.width} × {result.height} px</span></div>
+            <div className="image-before-after">
+              <figure className="image-compare-panel">
+                <figcaption><span>Before</span><strong>Original</strong></figcaption>
+                <img src={sourceUrl} alt={`Original image ${file.name}`} className="image-preview compare-preview" />
+                <span className="image-compare-meta">{source.width} × {source.height} px · {formatBytes(file.size)}</span>
+              </figure>
+              <figure className="image-compare-panel image-compare-panel--result">
+                <figcaption><span>After</span><strong>{formatLabel(result.format)}</strong></figcaption>
+                <img src={resultUrl} alt={`Processed ${formatLabel(result.format)} result`} className="image-preview compare-preview" />
+                <span className="image-compare-meta">{result.width} × {result.height} px · {formatBytes(result.blob.size)}</span>
+              </figure>
+            </div>
+            {isCompressor && <div className="size-comparison"><span>Size change</span><strong className={reductionPercent(file.size, result.blob.size) >= 0 ? "size-saving" : "size-increase"}>{reductionPercent(file.size, result.blob.size) >= 0 ? `${reductionPercent(file.size, result.blob.size)}% smaller` : `${Math.abs(reductionPercent(file.size, result.blob.size))}% larger`}</strong></div>}
             <DownloadButton href={resultUrl} filename={outputName} format={formatLabel(result.format)} size={formatBytes(result.blob.size)} />
-          </div>}
+          </section>}
         </div>
       )}
       <p className="workspace-footnote">Your image stays in this browser tab. It is not sent to our servers.</p>

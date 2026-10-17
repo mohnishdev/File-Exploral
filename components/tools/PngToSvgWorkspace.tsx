@@ -265,7 +265,15 @@ export function PngToSvgWorkspace() {
       </div>
 
       {!file ? (
-        <UploadDropzone accept={["image/png", ".png"]} onFile={(nextFile) => { void selectFile(nextFile); }} onError={() => { setError(""); setStatus(""); }} maxSize={MAX_VECTOR_FILE_SIZE} disabled={busy} />
+        <UploadDropzone
+          accept={["image/png", ".png"]}
+          onFile={(nextFile) => { void selectFile(nextFile); }}
+          onError={() => { setError(""); setStatus(""); }}
+          maxSize={MAX_VECTOR_FILE_SIZE}
+          disabled={busy}
+          title="Drop a PNG to create an SVG"
+          description="PNG only · best with logos, icons, and flat artwork"
+        />
       ) : (
         <div className="vector-tool-body">
           <div className="vector-source-summary">

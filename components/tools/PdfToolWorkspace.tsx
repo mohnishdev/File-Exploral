@@ -4,12 +4,13 @@
 /* eslint @next/next/no-img-element: "off" */
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowDown, ArrowUp, FilePlus2, LoaderCircle, RotateCw, Trash2, ZoomIn, ZoomOut,
+  ArrowDown, ArrowRightLeft, ArrowUp, FilePlus2, LoaderCircle, RotateCw, Trash2, ZoomIn, ZoomOut,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { DownloadButton } from "./DownloadButton";
-import { FilePicker } from "./FilePicker";
 import { FilePreview } from "./FilePreview";
+import { UploadDropzone } from "./UploadDropzone";
+import { getTool } from "@/lib/tools";
 import { openPdf, loadPdfLib, renderPdfPage, mergePdfs, extractPdfPages, saveEditedPdf, repackPdf, downloadRenderedPages, imagesToPdf, validatePdfFile } from "@/lib/pdf/browser";
 import type { BrowserPdfDocument } from "@/lib/pdf/browser";
 import { formatBytes } from "@/lib/image/validation";
@@ -17,9 +18,6 @@ import { formatBytes } from "@/lib/image/validation";
 type Props = { slug: string };
 type Output = { url: string; blob: Blob; filename: string; format: string };
 type EditorPage = { index: number; thumbnail?: string };
-
-const PDF_ACCEPT = ".pdf,application/pdf";
-const IMAGE_ACCEPT = ".jpg,.jpeg,.png,image/jpeg,image/png";
 
 function parsePageRange(value: string, count: number) {
   const pages = new Set<number>();
@@ -37,6 +35,8 @@ function parsePageRange(value: string, count: number) {
 }
 
 export function PdfToolWorkspace({ slug }: Props) {
+  const workspaceTool = getTool(slug);
+  const WorkspaceIcon = workspaceTool?.icon ?? FilePlus2;
   const [file, setFile] = useState<File>();
   const [files, setFiles] = useState<File[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
@@ -302,7 +302,7 @@ export function PdfToolWorkspace({ slug }: Props) {
     if (document && current) void renderPreview(document, current.index + 1, zoom);
   }
 
-  async function acceptMultiplePdfs(selected: FileList | null) {
+  async function acceptMultiplePdfs(selected: FileList | File[] | null) {
     if (!selected) return;
     const operationId = ++activeOperation.current;
     const selectedFiles = Array.from(selected);
@@ -319,7 +319,7 @@ export function PdfToolWorkspace({ slug }: Props) {
     }
   }
 
-  async function acceptImages(selected: FileList | null) {
+  async function acceptImages(selected: FileList | File[] | null) {
     if (!selected) return;
     const selectedFiles = Array.from(selected);
     const allowedExtension = /\.(jpe?g|png)$/i;
@@ -338,16 +338,28 @@ export function PdfToolWorkspace({ slug }: Props) {
   return (
     <Card className={`interactive-workspace pdf-workspace${isEditor ? " pdf-editor-workspace" : ""}`}>
       <div className="workspace-heading">
-        <div className="workspace-icon"><FilePlus2 size={20} /></div>
-        <div><strong>{slug.replaceAll("-", " ")}</strong><span>PDFs stay in your browser</span></div>
+        <div className="workspace-icon"><WorkspaceIcon size={20} /></div>
+        <div><strong>{workspaceTool?.shortName ?? "PDF tool"}</strong><span>PDFs stay in your browser</span></div>
         {(file || files.length > 0 || imageFiles.length > 0) && <button className="text-button reset-button" type="button" onClick={reset}>Reset</button>}
       </div>
 
-      {!file && !isMerge && !isImagesToPdf && <div className="pdf-upload"><FilePicker accept={PDF_ACCEPT} onFile={(nextFile) => void loadFile(nextFile)} disabled={busy} label="Choose PDF" /><p>Choose a PDF from your device. Files are processed in this browser.</p></div>}
+      {!file && !isMerge && !isImagesToPdf && <UploadDropzone
+        accept={[".pdf", "application/pdf"]}
+        onFile={(nextFile) => void loadFile(nextFile)}
+        disabled={busy}
+        title="Drop a PDF to get started"
+        description="PDF · or choose from your device"
+      />}
 
-      {isMerge && <section className="pdf-merge-panel" onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); if (!busy && event.dataTransfer.files.length > 0) void acceptMultiplePdfs(event.dataTransfer.files); }}>
-        <label className="file-input-label">Add PDF files<input type="file" accept={PDF_ACCEPT} multiple disabled={busy} onChange={(event) => { void acceptMultiplePdfs(event.currentTarget.files); event.currentTarget.value = ""; }} /></label>
-        <p className="upload-help">Add two or more PDF files. Drag files to change merge order.</p>
+      {isMerge && <section className="pdf-merge-panel">
+        <UploadDropzone
+          accept={[".pdf", "application/pdf"]}
+          onFiles={(selected) => void acceptMultiplePdfs(selected)}
+          multiple
+          disabled={busy}
+          title="Drop PDFs to combine"
+          description="Choose two or more PDF files · drag to set their order"
+        />
         <div className="sortable-file-list" onDragOver={(event) => event.preventDefault()}>
           {files.map((pdf, index) => <div className="sortable-file" key={`${pdf.name}-${pdf.size}-${index}`} draggable onDragStart={(event) => event.dataTransfer.setData("text/plain", String(index))} onDrop={(event) => { if (event.dataTransfer.files.length) return; const from = Number(event.dataTransfer.getData("text/plain")); if (!Number.isInteger(from) || from < 0 || from >= files.length) return; const next = [...files]; const [entry] = next.splice(from, 1); next.splice(index, 0, entry); setFiles(next); }}><span className="drag-handle" aria-hidden="true">⠿</span><FilePreview name={pdf.name} size={pdf.size} type="pdf" /><button type="button" className="icon-button" aria-label={`Remove ${pdf.name}`} onClick={() => setFiles(files.filter((_, itemIndex) => itemIndex !== index))}><Trash2 size={15} /></button></div>)}
         </div>
@@ -355,8 +367,14 @@ export function PdfToolWorkspace({ slug }: Props) {
       </section>}
 
       {isImagesToPdf && <section className="pdf-merge-panel">
-        <label className="file-input-label">Add images<input type="file" accept={IMAGE_ACCEPT} multiple disabled={busy} onChange={(event) => { void acceptImages(event.currentTarget.files); event.currentTarget.value = ""; }} /></label>
-        <p className="upload-help">Add JPG or PNG images. Drag to arrange PDF page order.</p>
+        <UploadDropzone
+          accept={[".jpg", ".jpeg", ".png", "image/jpeg", "image/png"]}
+          onFiles={(selected) => void acceptImages(selected)}
+          multiple
+          disabled={busy}
+          title="Drop images to create a PDF"
+          description="JPG or PNG · drag thumbnails below to arrange pages"
+        />
         <div className="sortable-file-list">
           {imageFiles.map((image, index) => <div className="sortable-file" key={`${image.name}-${image.size}-${index}`} draggable onDragStart={(event) => event.dataTransfer.setData("text/plain", String(index))} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { const from = Number(event.dataTransfer.getData("text/plain")); const next = [...imageFiles]; const [entry] = next.splice(from, 1); next.splice(index, 0, entry); setImageFiles(next); }}><span className="drag-handle" aria-hidden="true">⠿</span><FilePreview name={image.name} size={image.size} type="image" /><button type="button" className="icon-button" aria-label={`Remove ${image.name}`} onClick={() => setImageFiles(imageFiles.filter((_, itemIndex) => itemIndex !== index))}><Trash2 size={15} /></button></div>)}
         </div>
@@ -414,11 +432,25 @@ export function PdfToolWorkspace({ slug }: Props) {
       {notice && <p className="pdf-notice" role="status">{notice}</p>}
       {error && <p className="upload-error" role="alert">{error}</p>}
 
-      {output && <section className="pdf-result">
-        <div><strong>Ready to download</strong><p>{output.filename} · {output.format} · approximately {formatBytes(output.blob.size)}</p></div>
-        {isCompress && file && <div className="size-comparison"><span>Original <strong>{formatBytes(file.size)}</strong></span><span>Optimized <strong>{formatBytes(output.blob.size)}</strong></span><span className={output.blob.size <= file.size ? "size-saving" : "size-increase"}>{output.blob.size <= file.size ? `${Math.round((1 - output.blob.size / file.size) * 100)}% smaller` : `${Math.round((output.blob.size / file.size - 1) * 100)}% larger`}</span></div>}
+      {output && <section className="pdf-result" aria-label="Before and after file details">
+        <div className="pdf-result-heading"><div><strong>Ready to download</strong><p>{output.filename} · {output.format}</p></div><span>{formatBytes(output.blob.size)}</span></div>
+        <div className="pdf-before-after">
+          <article className="pdf-file-stage">
+            <span className="result-stage-label">Before</span>
+            <h3>{isMerge ? "Files to combine" : isImagesToPdf ? "Images to arrange" : "Original file"}</h3>
+            {file
+              ? <FilePreview name={file.name} size={file.size} type={isImagesToPdf ? "image" : "pdf"} />
+              : <div className="pdf-stage-summary"><strong>{isMerge ? `${files.length} PDF files` : `${imageFiles.length} images`}</strong><span>{formatBytes((isMerge ? files : imageFiles).reduce((total, item) => total + item.size, 0))} total</span></div>}
+          </article>
+          <span className="pdf-transform-icon" aria-hidden="true"><ArrowRightLeft size={17} /></span>
+          <article className="pdf-file-stage pdf-file-stage--result">
+            <span className="result-stage-label">After</span>
+            <h3>{output.format} file</h3>
+            <FilePreview name={output.filename} size={output.blob.size} type={output.format === "PDF" ? "pdf" : output.format === "ZIP" ? "file" : "image"} />
+          </article>
+        </div>
+        {isCompress && file && <div className="size-comparison"><span>Size change</span><strong className={output.blob.size <= file.size ? "size-saving" : "size-increase"}>{output.blob.size <= file.size ? `${Math.round((1 - output.blob.size / file.size) * 100)}% smaller` : `${Math.round((output.blob.size / file.size - 1) * 100)}% larger`}</strong></div>}
         <DownloadButton href={output.url} filename={output.filename} format={output.format} size={formatBytes(output.blob.size)} />
-        {notice && isCompress && <p className="pdf-compress-notice">{notice}</p>}
       </section>}
       <p className="workspace-footnote">Files stay in this browser session and are not sent to our servers.</p>
     </Card>

@@ -7,28 +7,45 @@ import { FilePicker } from "./FilePicker";
 
 type UploadDropzoneProps = {
   accept: string[];
-  onFile: (file: File) => void;
+  onFile?: (file: File) => void;
+  onFiles?: (files: File[]) => void;
   onError?: (message: string) => void;
   maxSize?: number;
   disabled?: boolean;
+  multiple?: boolean;
+  title?: string;
+  description?: string;
 };
 
-export function UploadDropzone({ accept, onFile, onError, maxSize, disabled = false }: UploadDropzoneProps) {
+export function UploadDropzone({
+  accept,
+  onFile,
+  onFiles,
+  onError,
+  maxSize,
+  disabled = false,
+  multiple = false,
+  title = "Drop your file here",
+  description = "or choose a file from your device",
+}: UploadDropzoneProps) {
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState("");
   const dragDepth = useRef(0);
   const acceptAttribute = accept.join(",");
 
-  function handleFile(file?: File) {
-    if (!file || disabled) return;
-    const result = validateFile(file, accept, maxSize);
-    if (!result.valid) {
-      setError(result.message);
-      onError?.(result.message);
+  function handleFiles(files: File[]) {
+    if (files.length === 0 || disabled) return;
+    const invalidFile = files
+      .map((file) => ({ file, validation: validateFile(file, accept, maxSize) }))
+      .find(({ validation }) => !validation.valid);
+    if (invalidFile && !invalidFile.validation.valid) {
+      setError(invalidFile.validation.message);
+      onError?.(invalidFile.validation.message);
       return;
     }
     setError("");
-    onFile(file);
+    if (multiple) onFiles?.(files);
+    else onFile?.(files[0]);
   }
 
   return (
@@ -54,15 +71,15 @@ export function UploadDropzone({ accept, onFile, onError, maxSize, disabled = fa
         event.preventDefault();
         dragDepth.current = 0;
         setDragging(false);
-        handleFile(event.dataTransfer.files[0]);
+        handleFiles(Array.from(event.dataTransfer.files));
       }}
       aria-label="File upload area"
       aria-describedby={error ? "upload-error" : "upload-help"}
     >
       <span className="upload-icon"><FileUp size={21} /></span>
-      <p className="upload-title">Drop your file here</p>
-      <p id="upload-help" className="upload-help">or select a file from your device</p>
-      <FilePicker accept={acceptAttribute} onFile={handleFile} disabled={disabled} />
+      <p className="upload-title">{title}</p>
+      <p id="upload-help" className="upload-help">{description}</p>
+      <FilePicker accept={acceptAttribute} onFile={onFile} onFiles={onFiles} multiple={multiple} disabled={disabled} label={multiple ? "Choose files" : "Choose file"} />
       {error && <p id="upload-error" className="upload-error" role="alert">{error}</p>}
     </div>
   );

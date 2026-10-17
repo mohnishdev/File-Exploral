@@ -5,12 +5,14 @@ import { FileUp } from "lucide-react";
 
 type FilePickerProps = {
   accept: string;
-  onFile: (file: File) => void;
+  onFile?: (file: File) => void;
+  onFiles?: (files: File[]) => void;
   disabled?: boolean;
   label?: string;
+  multiple?: boolean;
 };
 
-export function FilePicker({ accept, onFile, disabled = false, label = "Choose a file" }: FilePickerProps) {
+export function FilePicker({ accept, onFile, onFiles, disabled = false, label = "Choose a file", multiple = false }: FilePickerProps) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -23,9 +25,11 @@ export function FilePicker({ accept, onFile, disabled = false, label = "Choose a
         type="file"
         accept={accept}
         disabled={disabled}
+        multiple={multiple}
         onChange={(event) => {
-          const file = event.currentTarget.files?.[0];
-          if (file) onFile(file);
+          const files = Array.from(event.currentTarget.files ?? []);
+          if (multiple) onFiles?.(files);
+          else if (files[0]) onFile?.(files[0]);
           event.currentTarget.value = "";
         }}
       />
