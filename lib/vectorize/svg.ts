@@ -28,6 +28,53 @@ function sanitizeElement(source: Element, targetDocument: XMLDocument): Element 
   return target;
 }
 
+function optimizePathMarkup(root: Element, targetDocument: XMLDocument): void {
+  const children = Array.from(root.children);
+  const optimizedChildren = targetDocument.createDocumentFragment();
+  let colorGroup: SVGGElement | undefined;
+  let groupFill = "";
+
+  // Group only adjacent paths so their SVG paint order stays unchanged.
+  const flushColorGroup = () => {
+    if (!colorGroup) return;
+    optimizedChildren.appendChild(colorGroup);
+    colorGroup = undefined;
+    groupFill = "";
+  };
+
+  for (const child of children) {
+    if (child.localName !== "path") {
+      flushColorGroup();
+      optimizedChildren.appendChild(child);
+      continue;
+    }
+
+    const fill = child.getAttribute("fill") ?? "";
+    if (child.getAttribute("stroke") === fill && child.getAttribute("stroke-width") === "0") {
+      child.removeAttribute("stroke");
+      child.removeAttribute("stroke-width");
+    }
+    if (child.getAttribute("opacity") === "1") child.removeAttribute("opacity");
+
+    const rgb = /^rgb\((\d+),(\d+),(\d+)\)$/.exec(fill);
+    const normalizedFill = rgb
+      ? `#${rgb.slice(1).map((channel) => Number(channel).toString(16).padStart(2, "0")).join("")}`
+      : fill;
+    child.setAttribute("fill", normalizedFill);
+
+    if (!colorGroup || groupFill !== normalizedFill) {
+      flushColorGroup();
+      colorGroup = targetDocument.createElementNS(SVG_NAMESPACE, "g") as SVGGElement;
+      colorGroup.setAttribute("fill", normalizedFill);
+      groupFill = normalizedFill;
+    }
+    child.removeAttribute("fill");
+    colorGroup.appendChild(child);
+  }
+  flushColorGroup();
+  root.replaceChildren(optimizedChildren);
+}
+
 export function sanitizeAndInspectSvg(svg: string): VectorizationResult {
   if (new Blob([svg]).size > MAX_SVG_BYTES) {
     throw new Error("This image produced an SVG that is too complex to safely preview. Try Low detail, fewer colors, or a smaller PNG.");
@@ -43,8 +90,10 @@ export function sanitizeAndInspectSvg(svg: string): VectorizationResult {
   if (sourceRoot.localName !== "svg" || sourceRoot.namespaceURI !== SVG_NAMESPACE) {
     throw new Error("The vector engine returned an unsupported SVG result.");
   }
-  const sanitizedRoot = sanitizeElement(sourceRoot, document.implementation.createDocument(SVG_NAMESPACE, "svg"));
+  const sanitizedDocument = document.implementation.createDocument(SVG_NAMESPACE, "svg");
+  const sanitizedRoot = sanitizeElement(sourceRoot, sanitizedDocument);
   if (!sanitizedRoot) throw new Error("The SVG result could not be safely prepared for preview.");
+  optimizePathMarkup(sanitizedRoot, sanitizedDocument);
 
   const viewBox = sanitizedRoot.getAttribute("viewBox");
   const dimensions = viewBox?.trim().split(/[ ,]+/).map(Number);
